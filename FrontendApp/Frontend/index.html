@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Frontend</title>
+</head>
+<body>
+    <h1>Products</h1>
+    <ul id="product-list"></ul>
+
+    <h2>Add Product</h2>
+    <input type="text" id="name" placeholder="Product Name">
+    <input type="number" id="price" placeholder="Price">
+    <button onclick="addProduct()">Add</button>
+
+    <script>
+    const apiUrl = 'http://localhost:5000/api/products';
+
+    async function loadProducts() {
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      const list = document.getElementById('product-list');
+      list.innerHTML = '';
+      data.products.forEach(p => {
+        const item = document.createElement('li');
+        item.textContent = `${p.name} - ${p.price} ${data.defaultCurrency}`;
+        list.appendChild(item);
+      });
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Date.now(), name, price })
+      });
+      loadProducts();
+    }
+
+    loadProducts();
+    </script>
+</body>
+</html>
